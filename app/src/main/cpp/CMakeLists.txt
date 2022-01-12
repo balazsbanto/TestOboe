@@ -21,7 +21,16 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        native-lib.cpp MyOboe.cpp)
+        native-lib.cpp)
+
+add_library( # Sets the name of the library.
+        OboeAudioRecorder
+
+        # Sets the library as a shared library.
+        SHARED
+
+        # Provides a relative path to your source file(s).
+        OboeAudioRecorder.cpp)
 
 # Find the Oboe package
 find_package (oboe REQUIRED CONFIG)
@@ -44,8 +53,15 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        testoboe
+        OboeAudioRecorder
 
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib} oboe::oboe)
+
+target_link_libraries( # Specifies the target library.
+        testoboe
+
+        # Links the target library to the log library
+        # included in the NDK.
+        ${log-lib} oboe::oboe OboeAudioRecorder)
