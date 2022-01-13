@@ -2,18 +2,16 @@ package com.blade.testoboe
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
-import com.blade.testoboe.databinding.ActivityMainBinding
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_INPUTS
-import android.os.Environment
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
+import android.widget.ArrayAdapter
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -30,8 +28,6 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     var fullPathToFile = ""
-    var recordingFrequency = 48000
-
     private var audioPlayback: AudioHandler = AudioHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +38,6 @@ class MainActivity : AppCompatActivity() {
         oboelabel.text = stringFromJNI()
 
         buttonStartRecording.isEnabled = true
-
-        editTextFreq.setText(recordingFrequency.toString())
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val devices = audioManager.getDevices(GET_DEVICES_INPUTS)
@@ -89,6 +83,49 @@ class MainActivity : AppCompatActivity() {
                 processStartRecording()
             }
         }
+
+        populateSpinners()
+    }
+
+    fun populateSpinners() {
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.array_input_preset,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            input_preset_spinner.adapter = adapter
+        }
+
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.array_performance_mode,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            performance_mode_spinner.adapter = adapter
+        }
+    }
+
+    fun mapInputPresetToNdk(inputPreset: String): Int {
+        return when (inputPreset) {
+            "VoiceRecognition" -> 6
+            "Unprocessed" -> 9
+            "Camcorder" -> 5
+            else -> throw Throwable("Unsupported")
+        }
+    }
+
+    fun mapPerformanceModeToNdk(performanceMode: String): Int {
+        return when (performanceMode) {
+            "LowLatency" -> 12
+            "None" -> 10
+            else -> throw Throwable("Unsupported")
+        }
     }
 
     fun playStimulus() {
@@ -123,15 +160,6 @@ class MainActivity : AppCompatActivity() {
             }
             return@use outputStream.toString()
         }
-    }
-
-    // Get the recording frequency entered by the user. If empty then default to 48000.
-    fun getRecordingFreq(): Int {
-        var freq = recordingFrequency
-        if (!editTextFreq.text.toString().trim().isEmpty()) {
-            freq = editTextFreq.text.toString().toInt()
-        }
-        return freq
     }
 
     val RECORD_REQUEST_CODE = 1234
@@ -171,26 +199,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     fun processStartRecording() {
 
         playStimulus()
 
         Thread(Runnable {
-            startRecording(fullPathToFile, getRecordingFreq())
+            startRecording(
+                fullPathToFile, AudioConfig.RECORDER_SAMPLERATE,
+                mapInputPresetToNdk(input_preset_spinner.selectedItem.toString()),
+                mapPerformanceModeToNdk(performance_mode_spinner.selectedItem.toString())
+            )
         }).start()
         buttonStartRecording.isEnabled = false
     }
-
-//    fun processStopRecording() {
-//        Timer().schedule(object : TimerTask() {
-//            override fun run() {
-//                Thread(Runnable { stopRecording() }).start()
-//                buttonStartRecording.isEnabled = true
-//                buttonStopRecording.isEnabled = false
-//            }
-//        }, 300, 0)
-//    }
 
     fun processStopRecording() {
         Thread.sleep(150)
@@ -210,7 +231,8 @@ class MainActivity : AppCompatActivity() {
      */
     external fun stringFromJNI(): String
 
-    external fun startRecording(fullPathToFile: String, recordingFrequency: Int): Boolean
+    external fun startRecording(fullPathToFile: String, recordingFrequency: Int,
+                                inputPreset: Int, performanceMode: Int): Boolean
 
     external fun stopRecording(): Boolean
 

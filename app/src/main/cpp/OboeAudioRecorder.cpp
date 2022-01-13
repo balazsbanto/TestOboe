@@ -49,18 +49,17 @@ public:
         this->isRecording = false;
     }
 
-    //int recordingFrequency = 48000;
+    void StartAudioRecorder(const char *fullPathToFile, const int recordingFreq,
+                            const int inputPreset, const int performanceMode) {
 
-    void StartAudioRecorder(const char *fullPathToFile, const int recordingFreq) {
         this->isRecording = true;
+
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Input);
-        //builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
-        builder.setPerformanceMode(oboe::PerformanceMode::None);
+        builder.setPerformanceMode(static_cast<oboe::PerformanceMode>(performanceMode));
         builder.setFormat(oboe::AudioFormat::I16);
         builder.setChannelCount(oboe::ChannelCount::Mono);
-//        builder.setInputPreset(oboe::InputPreset::Unprocessed);
-        builder.setInputPreset(oboe::InputPreset::VoiceRecognition);
+        builder.setInputPreset(static_cast<oboe::InputPreset>(inputPreset));
         builder.setSharingMode(oboe::SharingMode::Shared);
         builder.setSampleRate(recordingFreq);
         builder.setAudioApi(oboe::AudioApi::OpenSLES);

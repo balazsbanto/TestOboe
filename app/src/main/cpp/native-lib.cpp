@@ -19,13 +19,17 @@ Java_com_blade_testoboe_MainActivity_startRecording(
         JNIEnv * env,
         jobject MainActivity,
         jstring fullPathToFile,
-        jint recordingFrequency) {
+        jint recordingFrequency,
+        jint inputPreset,
+        jint performanceMode) {
 
     const char *path = (*env).GetStringUTFChars(fullPathToFile, 0);
     const int freq = (int) recordingFrequency;
+    const int preset = (int) inputPreset;
+    const int performance = (int) performanceMode;
 
     static auto a = OboeAudioRecorder::get();
-    a->StartAudioRecorder(path, freq);
+    a->StartAudioRecorder(path, freq, preset, performance);
     return true;
 }
 
