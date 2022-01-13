@@ -27,7 +27,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var fullPathToFile = ""
     private var audioPlayback: AudioHandler = AudioHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,9 +63,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-        // Full path that is going to be sent to C++ through JNI ("/storage/emulated/0/Recorders/record.wav")
-        fullPathToFile = createTimeStampedFile(this, "aud", "wav").absolutePath
 
         buttonStartRecording.setOnClickListener {
             val permission =
@@ -202,16 +198,32 @@ class MainActivity : AppCompatActivity() {
     fun processStartRecording() {
 
         playStimulus()
+        initAndStartRecording()
+
+        buttonStartRecording.isEnabled = false
+    }
+
+    private fun initAndStartRecording() {
+
+        val inputPreset = input_preset_spinner.selectedItem.toString()
+        val performanceMode = performance_mode_spinner.selectedItem.toString()
+
+        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+        val fullPathToFile = File(
+            this.getExternalFilesDir(null), "aud_${sdf.format(Date())}" +
+                    "_preset-${inputPreset}_pMode-${performanceMode}.wav"
+        ).absolutePath
+
 
         Thread(Runnable {
             startRecording(
                 fullPathToFile, AudioConfig.RECORDER_SAMPLERATE,
-                mapInputPresetToNdk(input_preset_spinner.selectedItem.toString()),
-                mapPerformanceModeToNdk(performance_mode_spinner.selectedItem.toString())
+                mapInputPresetToNdk(inputPreset),
+                mapPerformanceModeToNdk(performanceMode)
             )
         }).start()
-        buttonStartRecording.isEnabled = false
     }
+
 
     fun processStopRecording() {
         Thread.sleep(150)
@@ -220,10 +232,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun createTimeStampedFile(context: Context, prefix: String, extension: String): File {
-        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-        return File(context.getExternalFilesDir(null), "${prefix}_${sdf.format(Date())}.$extension")
-    }
+//    fun createTimeStampedFile(context: Context, prefix: String, extension: String): File {
+//        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+//        return File(context.getExternalFilesDir(null), "${prefix}_${sdf.format(Date())}.$extension")
+//    }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
@@ -231,8 +243,10 @@ class MainActivity : AppCompatActivity() {
      */
     external fun stringFromJNI(): String
 
-    external fun startRecording(fullPathToFile: String, recordingFrequency: Int,
-                                inputPreset: Int, performanceMode: Int): Boolean
+    external fun startRecording(
+        fullPathToFile: String, recordingFrequency: Int,
+        inputPreset: Int, performanceMode: Int
+    ): Boolean
 
     external fun stopRecording(): Boolean
 
