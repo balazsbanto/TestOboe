@@ -10,12 +10,6 @@ object AudioConfig {
     const val RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT
     const val AUDIO_SOURCE = MediaRecorder.AudioSource.UNPROCESSED
 
-    const val PCM_OUTPUT_FILENAME_PREFIX = "AUDIO"
-    const val WAVE_OUTPUT_FILENAME_PREFIX = "AUDIO"
-
-    const val PCM_OUTPUT_FILENAME_EXTENSION = "pcm"
-    const val WAVE_OUTPUT_FILENAME_EXTENSION = "wav"
-
     const val MODE = AudioManager.STREAM_VOICE_CALL
 
     const val sourceBufferSizeInBytes = 512

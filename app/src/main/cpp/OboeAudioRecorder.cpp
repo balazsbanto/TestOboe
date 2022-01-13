@@ -59,7 +59,8 @@ public:
         builder.setPerformanceMode(oboe::PerformanceMode::None);
         builder.setFormat(oboe::AudioFormat::I16);
         builder.setChannelCount(oboe::ChannelCount::Mono);
-        builder.setInputPreset(oboe::InputPreset::Unprocessed);
+//        builder.setInputPreset(oboe::InputPreset::Unprocessed);
+        builder.setInputPreset(oboe::InputPreset::VoiceRecognition);
         builder.setSharingMode(oboe::SharingMode::Shared);
         builder.setSampleRate(recordingFreq);
         builder.setAudioApi(oboe::AudioApi::OpenSLES);

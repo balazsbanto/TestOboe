@@ -7,41 +7,14 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/sample_text"
-        android:layout_width="256dp"
-        android:layout_height="32dp"
-        android:text="Hello World!"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonStartRecording"
+        android:id="@+id/oboelabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Start Recording"
+        android:text="Oboe tester"
+        android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sample_text" />
-
-    <Button
-        android:id="@+id/buttonStopRecording"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Stop Recording"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/buttonStartRecording"
-        />
-
-    <TextView
-        android:id="@+id/textViewFreq"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recording Frequency"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/editTextFreq"
-        app:layout_constraintBottom_toBottomOf="@id/editTextFreq"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <EditText
@@ -50,21 +23,23 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="number"
+        android:hint="Recording frequency"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintLeft_toRightOf="@id/textViewFreq"
-        app:layout_constraintTop_toBottomOf="@id/buttonStartRecording"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oboelabel"
         />
 
-    <TextView
-        android:id="@+id/textViewTimer"
+    <Button
+        android:id="@+id/buttonStartRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0000000"
         android:layout_marginStart="16dp"
+        android:text="Start Recording"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewFreq"
-        />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextFreq" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

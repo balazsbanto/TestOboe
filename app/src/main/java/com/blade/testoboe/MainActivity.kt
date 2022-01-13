@@ -37,14 +37,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Timber.d("timber")
-        Log.d("logcat", "logcal")
 
         // Example of a call to a native method
-        sample_text.text = stringFromJNI()
+        oboelabel.text = stringFromJNI()
 
         buttonStartRecording.isEnabled = true
-        buttonStopRecording.isEnabled = false
 
         editTextFreq.setText(recordingFrequency.toString())
 
@@ -91,10 +88,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 processStartRecording()
             }
-        }
-
-        buttonStopRecording.setOnClickListener {
-            processStopRecording()
         }
     }
 
@@ -178,58 +171,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    var stopTimer = false
-    var seconds = 0
-    val maxSeconds = 10
-    fun startTimer() {
-        stopTimer = false
-        val timer = Timer()
-        val task = object : TimerTask() {
-            override fun run() {
-                if (!stopTimer) {
-                    seconds++
-                    textViewTimer.post {
-                        textViewTimer.setText(seconds.toString())
-                    }
-                    if (seconds == maxSeconds) {
-                        processStopRecording()
-                    }
-                } else {
-                    this.cancel()
-                }
-            }
-        }
-        timer.schedule(task, 0, 1000)
-    }
-
-    fun stopTimer() {
-        stopTimer = true
-        seconds = 0
-    }
-
-    val enableTimer = false
 
     fun processStartRecording() {
 
         playStimulus()
-        if (enableTimer) {
-            startTimer()
-        }
+
         Thread(Runnable {
             startRecording(fullPathToFile, getRecordingFreq())
         }).start()
         buttonStartRecording.isEnabled = false
-        buttonStopRecording.isEnabled = true
     }
 
+//    fun processStopRecording() {
+//        Timer().schedule(object : TimerTask() {
+//            override fun run() {
+//                Thread(Runnable { stopRecording() }).start()
+//                buttonStartRecording.isEnabled = true
+//                buttonStopRecording.isEnabled = false
+//            }
+//        }, 300, 0)
+//    }
+
     fun processStopRecording() {
-        if (enableTimer) {
-            stopTimer()
-        }
+        Thread.sleep(150)
         Thread(Runnable { stopRecording() }).start()
         buttonStartRecording.isEnabled = true
-        buttonStopRecording.isEnabled = false
     }
+
 
     fun createTimeStampedFile(context: Context, prefix: String, extension: String): File {
         val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
@@ -253,39 +221,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//class MainActivity : AppCompatActivity() {
-//
-//    private lateinit var binding: ActivityMainBinding
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        // Example of a call to a native method
-//        binding.sampleText.text = stringFromJNI()
-//    }
-//
-//    /**
-//     * A native method that is implemented by the 'testoboe' native library,
-//     * which is packaged with this application.
-//     */
-//    external fun stringFromJNI(): String
-//
-////    external fun  st
-//
-//    companion object {
-//        // Used to load the 'testoboe' library on application startup.
-//        init {
-//            System.loadLibrary("testoboe")
-//        }
-//    }
-//}
