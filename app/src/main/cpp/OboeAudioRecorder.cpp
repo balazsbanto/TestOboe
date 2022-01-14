@@ -62,7 +62,7 @@ public:
         builder.setInputPreset(static_cast<oboe::InputPreset>(inputPreset));
         builder.setSharingMode(oboe::SharingMode::Shared);
         builder.setSampleRate(recordingFreq);
-        builder.setAudioApi(oboe::AudioApi::OpenSLES);
+//        builder.setAudioApi(oboe::AudioApi::OpenSLES);
         //builder.setCallback(this);
 
         // Wave file generating stuff (from https://www.cplusplus.com/forum/beginner/166954/)
