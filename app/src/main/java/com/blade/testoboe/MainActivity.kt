@@ -8,6 +8,9 @@ import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_INPUTS
+import android.media.MediaScannerConnection
+import android.media.MediaScannerConnection.OnScanCompletedListener
+import android.os.Environment
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
@@ -28,6 +31,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private var audioPlayback: AudioHandler = AudioHandler()
+    private var fullPathToFile = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,8 +213,10 @@ class MainActivity : AppCompatActivity() {
         val performanceMode = performance_mode_spinner.selectedItem.toString()
 
         val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-        val fullPathToFile = File(
-            this.getExternalFilesDir(null), "aud_${sdf.format(Date())}" +
+//        val dir = this.getExternalFilesDir(null)
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+        fullPathToFile = File(
+            dir, "aud_${sdf.format(Date())}" +
                     "_preset-${inputPreset}_pMode-${performanceMode}.wav"
         ).absolutePath
 
@@ -229,6 +235,13 @@ class MainActivity : AppCompatActivity() {
         Thread.sleep(150)
         Thread(Runnable { stopRecording() }).start()
         buttonStartRecording.isEnabled = true
+        scanFile(fullPathToFile)
+    }
+
+    private fun scanFile(path: String) {
+        MediaScannerConnection.scanFile(
+            this@MainActivity, arrayOf(path), null
+        ) { p, uri -> Timber.i("Finished scanning " + p) }
     }
 
 
